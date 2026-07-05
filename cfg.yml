@@ -1,0 +1,12 @@
+database:
+  dsn: "mysql:host=localhost;port=3306;dbname=stage"
+  max_idle_conn: 8
+  max_open_conn: 4
+redis:
+  user: "redis"
+  password: "redis"
+app:
+  port: 5000
+  jwt:
+    secret: "asdDSA3123r1FE!F#fdsfAS$WT#^%YGDFadfsgDAFG%$32yt"
+  salt: 10

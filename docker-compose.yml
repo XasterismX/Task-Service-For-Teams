@@ -1,0 +1,26 @@
+
+services:
+  mysql_db:
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: stage
+      MYSQL_USER: example
+      MYSQL_PASSWORD: secret2
+    volumes:
+      - ./dbdata:/var/lib/mysql/
+  redis:
+    image: redis
+    container_name: redis_container
+    environment:
+      REDIS_PASSWORD: root
+      REDIS_USER: redis
+      REDIS_USER_PASSWORD: redis
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./redisdata:/data
+    restart: unless-stopped
