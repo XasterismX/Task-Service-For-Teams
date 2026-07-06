@@ -11,7 +11,7 @@ services:
       MYSQL_USER: example
       MYSQL_PASSWORD: secret2
     volumes:
-      - ./dbdata:/var/lib/mysql/
+      - dbdata:/var/lib/mysql/
   redis:
     image: redis
     container_name: redis_container
@@ -22,5 +22,8 @@ services:
     ports:
       - "6380:6379"
     volumes:
-      - ./redisdata:/data
+      - redisdata:/data
     restart: unless-stopped
+volumes:
+  dbdata:
+  redisdata:

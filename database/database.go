@@ -17,6 +17,7 @@ type Database struct {
 func NewDatabase(logger *slog.Logger) *Database {
 	dsn := viper.GetString("database.dsn")
 	db, err := sql.Open("mysql", dsn)
+	defer db.Close()
 	if err != nil {
 		panic(err)
 	}

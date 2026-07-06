@@ -59,9 +59,44 @@ func (uc *UseCase) GetUsers(offset, limit int) ([]entity.User, error) {
 	}
 	return users, nil
 }
-func (uc *UseCase) GetOneUser(id int) (entity.User, error)                   {}
-func (uc *UseCase) UpdateUser(id int, user entity.User) (entity.User, error) {}
-func (uc *UseCase) DeleteUser(id int) error                                  {}
+func (uc *UseCase) GetOneUser(id int) (entity.User, error) {
+	var u entity.User
+	q, err := uc.repo.QueryRow(`select (id, email, name, password) from users where id=$1`, id)
+	if err != nil {
+		uc.logger.Error("err", err)
+		return entity.User{}, err
+	}
+	err = q.Scan(&u)
+	if err != nil {
+		uc.logger.Error("err", err)
+		return entity.User{}, err
+	}
+	return u, nil
+
+}
+func (uc *UseCase) UpdateUser(id int, user entity.User) (entity.User, error) {
+	var updatedUser entity.User
+	hashPassword := uc.hashPassword(user.Password)
+	q, err := uc.repo.QueryRow(`UPDATE users SET name = $1, email = $2, password = $3 WHERE id=$4 RETURNING id, name, email`, user.Name, user.Email, hashPassword, id)
+	if err != nil {
+		uc.logger.Error("err", err)
+		return entity.User{}, err
+	}
+	err = q.Scan(&updatedUser)
+	if err != nil {
+		uc.logger.Error("err", err)
+		return entity.User{}, err
+	}
+	return updatedUser, nil
+}
+func (uc *UseCase) DeleteUser(id int) error {
+	_, err := uc.repo.Exec(`DELETE FROM users WHERE id = $1`, id)
+	if err != nil {
+		uc.logger.Error("err", err)
+		return err
+	}
+	return nil
+}
 func (uc *UseCase) hashPassword(password string) string {
 	passwordBytes, err := bcrypt.GenerateFromPassword([]byte(password), viper.GetInt("app.salt"))
 	if err != nil {
